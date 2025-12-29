@@ -18,8 +18,13 @@ Key fields: `year, month, airport, carrier, arr_flights, arr_del15, cancellation
 > Note: This repo contains only a small sample for demo. Full dataset should be stored in S3.
 
 ## Architecture
-**S3 (raw)** → **EC2 + PySpark** → **S3 (processed + logs)** → **Analytics / Power BI**  
-Optional automation: **S3/Lambda trigger** → **SSM** → `run_pipeline.sh` → **SNS email**
+1. **S3 (raw + processed)** stores the dataset and outputs
+2. **EC2 (Linux)** runs PySpark jobs for processing/analytics
+3. **PySpark** performs cleaning, feature engineering, aggregation
+4. **Spark SQL** runs analytical queries (top carriers, trends, etc.)
+5. **SageMaker Canvas** used for no-code model training & evaluation
+6. **Power BI** dashboard created from processed dataset (alternative to QuickSight)
+
 
 ## Features Implemented
 ### Data Processing (PySpark)
