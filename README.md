@@ -51,7 +51,7 @@ Key fields: `year, month, airport, carrier, arr_flights, arr_del15, cancellation
 - Yearly / monthly trends
 - Flight volume by carrier
 
-### Automation (Bonus)
+### Automation
 - `pipeline/run_pipeline.sh` runs the pipeline end-to-end
 - Optional scheduling:
   - Lambda + SSM trigger
