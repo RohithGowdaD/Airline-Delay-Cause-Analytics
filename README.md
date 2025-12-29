@@ -1,83 +1,97 @@
-# Airline Delay Cause Analytics (AWS + PySpark)
+# Cloud-Based Big Data Analytics Pipeline (AWS + PySpark) — Airline Delay Cause Dataset
 
-End-to-end **cloud-based big data analytics pipeline** using **AWS (S3, EC2, IAM, SNS, Lambda/SSM optional)** and **PySpark** to ingest, process, analyze, and store airline delay data for downstream analytics and dashboards.
+End-to-end big data pipeline that ingests airline delay data from **Amazon S3**, processes it with **PySpark on EC2**, writes curated outputs back to S3 (CSV + Parquet), runs analytics via **Spark SQL**, and demonstrates **automation + monitoring** using **AWS Lambda + Systems Manager (SSM) + SNS**. The project also includes an AutoML experiment using **SageMaker Autopilot** and an interactive dashboard built in **Power BI**.
 
-## Project Overview
-This project builds a production-style data pipeline:
-- Ingest raw airline delay data from **Amazon S3**
-- Process and feature-engineer using **PySpark** on **EC2**
-- Write processed outputs back to **S3** in **CSV + Parquet**
-- Run analytics using **Spark SQL**
-- Optional automation with **Lambda + SSM + SNS notifications**
-- Dashboarding via **Power BI** (QuickSight attempted, fallback due to Free Tier limitations)
+## Architecture (high level)
+
+S3 (raw) → Lambda trigger → SSM Run Command → EC2 (PySpark jobs + bash runner) → S3 (processed + logs) → SNS email notifications → Power BI dataset refresh
+
+## What this repo contains
+
+- **PySpark pipeline** for ingestion, cleaning, feature engineering, aggregations, and export
+- **Spark SQL analytics** queries
+- **Automation script** to run the pipeline end-to-end and push logs to S3
+- **Sample dataset** (5k rows) for quick local testing
+- **Project report** (PDF) describing infrastructure, tasks, and results
 
 ## Dataset
-**Airline Delay Cause Dataset** (multi-year flight performance data).  
-Key fields: `year, month, airport, carrier, arr_flights, arr_del15, cancellations/diversions, delay causes` (carrier/weather/NAS/security/late aircraft).
 
-> Note: This repo contains only a small sample for demo. Full dataset should be stored in S3.
+This project uses the **Airline Delay Cause Dataset**, which includes flight volume, cancellations, and delay causes across multiple years (e.g., carrier / weather / NAS / late aircraft).  
+Key columns include `year`, `month`, `airport`, `carrier`, `arr_flights`, `arr_del15`, and delay-cause metrics (counts + minutes).
 
-## Architecture
-**S3 (raw)** → **EC2 + PySpark** → **S3 (processed + logs)** → **Analytics / Power BI**  
-Optional automation: **S3/Lambda trigger** → **SSM** → `run_pipeline.sh` → **SNS email**
+> Note: The full dataset is not tracked in Git to keep the repo lightweight. Use the sample file in `data/sample/` or download the original dataset and place it under `data/raw/`.
 
-## Features Implemented
-### Data Processing (PySpark)
-- Drop missing values
-- Feature engineering:
-  - `total_delay_minutes` = sum of individual delay minutes
-  - `total_delay_count` = sum of delay counts
-- Aggregations:
-  - Total delay minutes by carrier
-  - Avg delay minutes by airport
-  - Yearly + monthly delay trends
-  - Avg delay minutes per carrier
+## Repository structure
 
-### Storage
-- Output formats:
-  - **Parquet** (optimized analytics)
-  - **CSV** (BI-friendly)
-- Organized S3 structure:
-  - `raw/`, `processed/`, `analytics/logs/`
+```text
+.
+├── Pipeline/
+│   └── run_pipeline.sh              # End-to-end runner (EC2)
+├── airline_project/
+│   ├── ingest_airline.py            # Read raw data from S3
+│   ├── transform_airline.py         # Clean + feature engineering + aggregations
+│   ├── save_to_s3.py                # Write processed outputs to S3
+│   └── sql_airline.py               # Spark SQL analytics
+├── data/
+│   ├── raw/                         # (ignored) full dataset goes here
+│   └── sample/
+│       └── Airline_Delay_Cause_sample.csv
+├── outputs/
+│   └── Processed/                   # Example outputs/logs from runs (ignored by default)
+├── docs/
+│   └── MiniProject_Report.pdf
+└── README.md
+```
 
-### Analytics (Spark SQL)
-- Total arrival delay by carrier
-- Avg arrival delay by airport
-- Yearly / monthly trends
-- Flight volume by carrier
+## Quickstart (local)
 
-### Automation (Bonus)
-- `pipeline/run_pipeline.sh` runs the pipeline end-to-end
-- Optional scheduling:
-  - Lambda + SSM trigger
-  - SNS email notifications on success/failure
-  - Cron option available
+### 1) Create a virtual environment and install dependencies
 
-## Repo Structure
-- `src/` PySpark ETL + SQL analytics
-- `pipeline/` run scripts + configs
-- `data/sample/` small input for local run
-- `outputs/` sample outputs
-- `docs/` report + architecture + screenshots
-
-## Quickstart (Local)
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -U pip pyspark
-
-python src/transform_airline.py \
-  --input data/sample/Airline_Delay_Cause_sample.csv \
-  --output outputs/local
 ```
 
-## Results & Insights
-Dashboards highlight:
-- Monthly flight trends by year (COVID impact visible)
-- Top airports by arrival volume
-- Delay cause breakdowns
-- Airline reliability (cancellations vs delays)
-- Airport traffic volume vs delay frequency
+### 2) Run with the sample dataset (local mode)
 
-## Report
-Full report is available in: `docs/MiniProject_Report.pdf`
+```bash
+python airline_project/transform_airline.py --input data/sample/Airline_Delay_Cause_sample.csv --output outputs/local
+```
+
+> If your scripts currently assume S3 paths, you can add a simple `--input/--output` CLI wrapper, or run them in your EC2 environment where S3 access is configured via IAM role.
+
+## Running on AWS (recommended)
+
+### Prerequisites
+
+- An S3 bucket with folders for `raw/`, `processed/`, and `analytics/logs/`
+- An EC2 instance with Spark installed (or use a managed Spark distribution)
+- EC2 IAM Role with permission to read/write S3 and publish to SNS
+- (Optional) Lambda + SSM for serverless triggering
+
+### Pipeline execution (EC2)
+
+```bash
+cd /home/ubuntu/pipeline
+chmod +x run_pipeline.sh
+./run_pipeline.sh
+```
+
+## AutoML (SageMaker Autopilot)
+
+The processed dataset can be imported into SageMaker Autopilot (Canvas) for a regression task where the target is **total delay minutes**.  
+
+## Dashboard (Power BI)
+
+Power BI is used to build interactive visualizations (flight trends, delay causes, reliability, etc.) reading the processed CSV output from S3.
+
+## Notes for reviewers
+
+- **No AWS secrets are stored in this repo.** AWS access is intended via EC2 instance roles and managed policies.
+- Large datasets and generated outputs are excluded via `.gitignore`.
+
+## License
+
+MIT (feel free to change).
+

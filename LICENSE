@@ -1,10 +1,6 @@
 MIT License
 
-<<<<<<< HEAD
-Copyright (c) 2025 RohithGowdaD
-=======
 Copyright (c) 2025 Rohith Gowda Devaraju
->>>>>>> 15c8898 (Initial commit: Airline Delay Analytics pipeline (AWS + PySpark))
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
