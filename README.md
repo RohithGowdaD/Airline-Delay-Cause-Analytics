@@ -58,6 +58,9 @@ Key fields: `year, month, airport, carrier, arr_flights, arr_del15, cancellation
   - SNS email notifications on success/failure
   - Cron option available
 
+![Automation](Architecture.png)
+
+
 ## Repo Structure
 - `src/` PySpark ETL + SQL analytics
 - `pipeline/` run scripts + configs
@@ -90,9 +93,6 @@ Due to Power BI tenant sharing restrictions, the interactive dashboard cannot be
 Below are preview snapshots of the dashboard.
 
 ![Dashboard Overview](image.png)
-
-## Report
-Full report is available in: `docs/MiniProject_Report.pdf`
 
 ## License
 MIT License
