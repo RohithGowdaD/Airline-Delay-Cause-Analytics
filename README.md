@@ -1,4 +1,4 @@
-# Cloud-Based Big Data Analytics Pipeline (AWS + PySpark)
+# Cloud-Based Big Data Analytics  (AWS + PySpark)
 ## Airline Delay Cause Analytics
 
 An end-to-end cloud-based big data analytics pipeline that ingests airline delay data from Amazon S3, processes it using PySpark on EC2, writes curated outputs back to S3 (CSV + Parquet), and runs analytical queries using Spark SQL. The pipeline demonstrates automation, orchestration, and monitoring using AWS Lambda, Systems Manager (SSM), and SNS, and includes downstream analytics via SageMaker Autopilot and Power BI dashboards.
