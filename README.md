@@ -79,8 +79,16 @@ Dashboards highlight:
 - Airline reliability (cancellations vs delays)
 - Airport traffic volume vs delay frequency
 
+## Power BI Dashboard
+
+Due to Power BI tenant sharing restrictions, the interactive dashboard cannot be publicly embedded.
+Below are preview snapshots of the dashboard.
+
+![Dashboard Overview](image.png)
+
 ## Report
 Full report is available in: `docs/MiniProject_Report.pdf`
 
 ## License
 MIT License
+
